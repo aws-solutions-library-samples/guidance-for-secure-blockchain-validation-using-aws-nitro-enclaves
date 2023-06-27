@@ -1,32 +1,27 @@
 # AWS Nitro Enclave Blockchain Validator (Web3Signer)
 
-This project represents an example implementation of an AWS Nitro Enclave
+This project represents an example implementation of an [AWS Nitro Enclave](https://aws.amazon.com/ec2/nitro/nitro-enclaves/)
 based [Consensys Web3Signer](https://github.com/ConsenSys/web3signer) deployment which is commonly used as a remote
 signer instance for [EIP-3030](https://eips.ethereum.org/EIPS/eip-3030) compatible
 blockchain [validator nodes](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/#transaction-execution-ethereum-pos).
 A single Web3Signer deployment can be used by several Ethereum validator nodes.
 
-The project is implemented in AWS Cloud Development Kit (CDK) v2 and Python.
+The project is implemented in [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (CDK) v2 and Python.
 
 This repository contains all code artifacts for the following two blog posts. A walkthrough, explaining how to deploy
 and configure the solution is enclosed in the `docs` folder of this repository.
 
-[//]: # (1. [AWS Nitro Enclaves for running Ethereum validators &#40;Part 1&#41;]&#40;www.example.com&#41;)
-[//]: # (2. [AWS Nitro Enclaves for running Ethereum validators &#40;Part 2&#41;]&#40;www.example.com&#41;)
-1. [AWS Nitro Web3Signer Solution Walkthrough](./docs/walkthrough.md)
+1. [AWS Nitro Enclaves for running Ethereum validators – Part 1](https://aws.amazon.com/blogs/database/aws-nitro-enclaves-for-running-ethereum-validators-part-1/)
+2. [AWS Nitro Enclaves for running Ethereum validators – Part 2](https://aws.amazon.com/blogs/database/aws-nitro-enclaves-for-running-ethereum-validators-part-2/)
+3. [AWS Nitro Web3Signer solution walkthrough](./docs/walkthrough.md)
 
-[//]: # (For an overview of how to design an AWS Nitro Enclave secured blockchain validation process, please have a look at)
+For an overview of how to design an AWS Nitro Enclave secured blockchain validation process, please have a look at [Part 1](https://aws.amazon.com/blogs/database/aws-nitro-enclaves-for-running-ethereum-validators-part-1/).
 
-[//]: # (the [first blog post]&#40;www.example.com&#41;.)
+For a deep dive into AWS Nitro Enclave based Web3Signer node setup and integration patterns, a deep dive of how to
+bootstrap https endpoints inside AWS Nitro Enclave environment or how to securely tunnel https traffic over a vsock
+socket, please refer to [Part 2](https://aws.amazon.com/blogs/database/aws-nitro-enclaves-for-running-ethereum-validators-part-2/).
 
-[//]: # ()
-[//]: # (For a deep dive into AWS Nitro Enclave based Web3Signer node setup and integration patterns, a deep dive of how to)
-
-[//]: # (bootstrap https endpoints inside AWS Nitro Enclave environment or how to securely tunnel https traffic over a vsock)
-
-[//]: # (socket, please refer to [second blog post]&#40;www.example.com&#41;.)
-
-For a walkthrough on how to deploy, bootstrap, configure and start the Nitro Enclave secured Web3Signer process, please
+For a walkthrough on how to deploy, bootstrap, configure and start the AWS Nitro Enclave secured Web3Signer process, please
 refer to the [walkthrough](./docs/walkthrough.md).
 
 ## Solution overview
