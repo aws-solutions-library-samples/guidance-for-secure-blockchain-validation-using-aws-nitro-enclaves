@@ -1,3 +1,28 @@
+Content-Type: multipart/mixed; boundary="//"
+MIME-Version: 1.0
+
+--//
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+bootcmd:
+  - [ amazon-linux-extras, install, aws-nitro-enclaves-cli ]
+packages:
+  - aws-nitro-enclaves-cli-devel
+  - htop
+  - git
+  - mode_ssl
+  - jq
+
+--//
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="userdata.txt"
+
 #!/bin/bash
 #  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #  SPDX-License-Identifier: MIT-0
@@ -12,15 +37,8 @@ echo "TLS_KEYS_TABLE_NAME=${__TLS_KEYS_TABLE_NAME__}" >>/etc/environment
 echo "VALIDATOR_KEYS_TABLE_NAME=${__VALIDATOR_KEYS_TABLE_NAME__}" >>/etc/environment
 echo "CF_STACK_NAME=${__CF_STACK_NAME__}" >>/etc/environment
 
-yum update -y
-amazon-linux-extras install docker
-systemctl start docker
-systemctl enable docker
-amazon-linux-extras enable aws-nitro-enclaves-cli
-yum install -y aws-nitro-enclaves-cli aws-nitro-enclaves-cli-devel htop git mod_ssl
-
-sudo -H bash -c "pip3 install boto3"
-sudo -H bash -c "pip3 install botocore"
+bash -c "pip3 install boto3"
+bash -c "pip3 install botocore"
 
 usermod -aG docker ec2-user
 usermod -aG ne ec2-user
@@ -41,12 +59,9 @@ allowlist:
 - {address: kms-fips.${__REGION__}.amazonaws.com, port: 443}
 EOF
 
-sleep 20
-systemctl start nitro-enclaves-allocator.service
-systemctl enable nitro-enclaves-allocator.service
-
-systemctl start nitro-enclaves-vsock-proxy.service
-systemctl enable nitro-enclaves-vsock-proxy.service
+systemctl enable --now docker
+systemctl enable --now nitro-enclaves-allocator.service
+systemctl enable --now nitro-enclaves-vsock-proxy.service
 
 cd /home/ec2-user
 if [[ ! -d ./app/server ]]; then
@@ -97,3 +112,4 @@ fi
 
 # docker over system process manager
 sudo docker run -d --restart unless-stopped --name http_server -p 8443:443 ${__SIGNING_SERVER_IMAGE_URI__}
+--//--
