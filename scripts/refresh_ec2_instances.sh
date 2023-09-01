@@ -4,4 +4,4 @@
 set +x
 set -e
 
-aws autoscaling start-instance-refresh --auto-scaling-group-name ${1}
+aws autoscaling start-instance-refresh --region "${CDK_DEPLOY_REGION}" --auto-scaling-group-name "${1}"

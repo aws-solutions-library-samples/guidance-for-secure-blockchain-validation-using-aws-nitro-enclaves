@@ -126,7 +126,13 @@ steps below:
    using [Generate validator keys for Ethereum with trusted code in AWS Lambda and AWS Signer](https://github.com/aws-samples/eth-keygen-lambda-sam),
    modify the code in [app.py](../app.py) to specify the `kms_arn` and `validator_key_table_arn`. Else, skip this step.
 
-8. Deploy the sample code with the AWS CDK CLI:
+8. Specify the AWS region and account for your deployment:
+   ```shell
+   export CDK_DEPLOY_REGION=us-east-1
+   export CDK_DEPLOY_ACCOUNT=$(aws sts get-caller-identity | jq -r '.Account')
+   ```
+
+9. Deploy the sample code with the AWS CDK CLI:
 
    ```shell
    cdk deploy devNitroValidator -O output.json
