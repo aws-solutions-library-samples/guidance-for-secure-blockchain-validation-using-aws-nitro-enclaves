@@ -4,9 +4,10 @@
 set +x
 set -e
 
-NITRO_ENCLAVE_CLI_VERSION="v0.3.1"
+NITRO_ENCLAVE_CLI_VERSION="v0.4.1"
 KMS_FOLDER="./application/eth2/enclave/kms"
 KMSTOOL_FOLDER="./aws-nitro-enclaves-sdk-c/bin/kmstool-enclave-cli"
+TARGET_PLATFORM="linux/amd64"
 
 if [[ ! -d ${KMS_FOLDER} ]]; then
   mkdir -p ${KMS_FOLDER}
@@ -25,6 +26,10 @@ mv Dockerfile.al2_new Dockerfile.al2
 cd ../../
 
 cd ${KMSTOOL_FOLDER}
+
+sed "s|-f ../../containers/Dockerfile.al2 ../..|-f ../../containers/Dockerfile.al2 ../.. --platform=${TARGET_PLATFORM}|g" build.sh >build.sh_new
+mv build.sh_new build.sh
+chmod +x build.sh
 ./build.sh
 
 cp ./kmstool_enclave_cli ../../../kmstool_enclave_cli

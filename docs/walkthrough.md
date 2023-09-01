@@ -85,7 +85,13 @@ To install the sample application, complete the following steps:
 
 8. (Optional) If you have deployed the validator key table and KMS key using [Generate validator keys for Ethereum with trusted code in AWS Lambda and AWS Signer](https://github.com/aws-samples/eth-keygen-lambda-sam), modify the code in [app.py](../app.py) to specify the `kms_arn` and `validator_key_table_arn`. Else, skip this step.
 
-9. Deploy the sample code with the AWS CDK CLI:
+9. Specify the AWS region and account for your deployment:
+   ```shell
+   export CDK_DEPLOY_REGION=us-east-1
+   export CDK_DEPLOY_ACCOUNT=$(aws sts get-caller-identity | jq -r '.Account')
+   ```
+   
+10. Deploy the sample code with the AWS CDK CLI:
 
    ```shell
    cdk deploy prodNitroValidator -O output.json
@@ -94,7 +100,7 @@ To install the sample application, complete the following steps:
    AWS CDK asks for an additional confirmation to deploy the solution, as shown in the following screenshot.
   ![CDK Confirmation](../assets/deployment_confirmation.png)
 
-10. Enter `y` to confirm.
+11. Enter `y` to confirm.
 
    After the deployment is complete, the terminal shows us the additional parameters like the Auto Scaling group name.
    These values have also been written to `output.json` in JSON format.
@@ -111,6 +117,9 @@ To install the sample application, complete the following steps:
     ```
 
 2. Follow either one of the instruction below:
+
+
+
 
    **Option 1**: If you have deployed the validator key table and KMS key using [Generate validator keys for Ethereum with trusted code in AWS Lambda and AWS Signer](https://github.com/aws-samples/eth-keygen-lambda-sam), follow the instructions in that repository to generate and load the validator key.
 
@@ -130,6 +139,10 @@ To install the sample application, complete the following steps:
    Insert the UUID as the column value so that the key(s) are loaded into web3signer Nitro Enclave in the subsequent step. In the example below, the key starting with `8c38` will be loaded into web3signer while the key starting with `a179` will not be loaded.
 
    ![Key Set](../assets/validator_key_table_set.png)
+
+
+
+
 
    **Option 2**: If you have deployed the validator key table and KMS key as part of this CDK application, you need to run a script to generate the validator keys and load into the DynamoDB table. Note that this method should only be used in non-production environments. You should use a secure method as depicted in Option 1 for production environments.
 

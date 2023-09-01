@@ -14,14 +14,16 @@ NitroWalletStack(
     app,
     "devNitroValidator",
     params={"deployment": "dev", "application_type": "eth2"},
-    env=Environment(region=os.environ.get("CDK_DEPLOY_REGION", os.environ["CDK_DEFAULT_REGION"])),
+    env=Environment(region=os.environ.get("CDK_DEPLOY_REGION"),
+                    account=os.environ.get("CDK_DEPLOY_ACCOUNT")),
 )
 
 NitroWalletStack(
     app,
     "prodNitroValidator",
     params={"deployment": "prod", "application_type": "eth2"},
-    env=Environment(region=os.environ.get("CDK_DEPLOY_REGION", os.environ["CDK_DEFAULT_REGION"])),
+    env=Environment(region=os.environ.get("CDK_DEPLOY_REGION"),
+                    account=os.environ.get("CDK_DEPLOY_ACCOUNT")),
 )
 
 ## If there are existing validator key table and KMS key, comment the code above and uncomment the code below!!
