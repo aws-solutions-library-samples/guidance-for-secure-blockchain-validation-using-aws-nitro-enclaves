@@ -86,7 +86,7 @@ steps below:
 2. Download the code from the GitHub repo and change to the new directory:
 
    ```shell
-   git clone https://gitlab.aws.dev/proserve-es/publicblockchain/nitro_validator_cdk
+   git clone https://github.com/aws-samples/aws-nitro-enclave-blockchain-validator.git
    ```
 
 3. Change to the nitro_validator_cdk repository:
