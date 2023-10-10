@@ -7,7 +7,7 @@ set +x
 output=${1}
 
 # instance id
-stack_name=$(jq -r '. |= keys | .[0]' output.json)
+stack_name=$(jq -r '. |= keys | .[0]' "${output}")
 asg_name=$(jq -r '."'${stack_name}'".ASGGroupName' "${output}")
 web3signer_init_flag_param_name=$(jq -r '."'${stack_name}'"."Web3SignerInitFlagParamName"' "${output}")
 

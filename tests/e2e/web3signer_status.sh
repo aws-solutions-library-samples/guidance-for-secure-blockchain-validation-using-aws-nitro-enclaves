@@ -9,7 +9,6 @@ output=${1}
 stack_name=$(jq -r '. |= keys | .[0]' "${output}")
 lambda_function_name=$(jq -r ".${stack_name}.LambdaFunctionArn" "${output}")
 
-# shellcheck disable=SC2089
 STATUS_OPERATION="web3signer_status"
 PUBLIC_KEYS_OPERATION="web3signer_public_keys"
 GENERIC_REQUEST='{
