@@ -54,7 +54,9 @@ def get_aws_session_token() -> dict:
 
 
 def get_cloudformation_stack_id(cf_stack_name: str) -> str:
-    cf_client = boto3.client(service_name="cloudformation", region_name=os.getenv("REGION"))
+    cf_client = boto3.client(
+        service_name="cloudformation", region_name=os.getenv("REGION")
+    )
 
     try:
         response = cf_client.describe_stacks(
@@ -89,7 +91,10 @@ def nitro_cli_describe_call(name: str = None) -> bool:
         if len(response) != 1:
             return False
 
-        if response[0].get("EnclaveName") != name and response[0].get("State") != "Running":
+        if (
+            response[0].get("EnclaveName") != name
+            and response[0].get("State") != "Running"
+        ):
             return False
 
     return True
@@ -155,13 +160,15 @@ def get_encrypted_validator_keys(validator_keys_table_name: str, uuid: str) -> l
 
         if last_evaluated_key:
             _logger.debug(
-                f"There are more validator keys to be retrieved - but logic to retrieve more keys are not implemented"
+                "There are more validator keys to be retrieved - but logic to retrieve more keys are not implemented"
             )
 
         if record_count < 1:
             raise f"No validator keys found for web3signer {uuid}"
 
-        _logger.debug(f"Number of validator keys assigned to web3signer {uuid}: {record_count}")
+        _logger.debug(
+            f"Number of validator keys assigned to web3signer {uuid}: {record_count}"
+        )
 
         # Assume there is encrypted_key_password_mnemonic_b64 column
         encrypted_key_password_mnemonic_b64_list = list(
@@ -169,7 +176,9 @@ def get_encrypted_validator_keys(validator_keys_table_name: str, uuid: str) -> l
         )
 
         if not len(encrypted_key_password_mnemonic_b64_list) == record_count:
-            _logger.debug(f"There might be missing keys due to missing fields in DynamoDB")
+            _logger.debug(
+                "There might be missing keys due to missing fields in DynamoDB"
+            )
 
         return encrypted_key_password_mnemonic_b64_list
 
@@ -220,9 +229,13 @@ def get_encrypted_tls_key(tls_keys_table_name: str, key_id=1) -> str:
         raise e
 
 
-def init_web3signer_call(tls_keys_table_name: str, cf_stack_name: str, validator_keys_table_name: str) -> None:
+def init_web3signer_call(
+    tls_keys_table_name: str, cf_stack_name: str, validator_keys_table_name: str
+) -> None:
     uuid = get_cloudformation_stack_id(cf_stack_name)
-    encrypted_validator_keys = get_encrypted_validator_keys(validator_keys_table_name, uuid)
+    encrypted_validator_keys = get_encrypted_validator_keys(
+        validator_keys_table_name, uuid
+    )
     encrypted_tls_key = get_encrypted_tls_key(tls_keys_table_name=tls_keys_table_name)
 
     credential = get_aws_session_token()
@@ -279,7 +292,9 @@ def main():
 
     # init web3signer
     try:
-        init_web3signer_call(tls_keys_table_name, cf_stack_name, validator_keys_table_name)
+        init_web3signer_call(
+            tls_keys_table_name, cf_stack_name, validator_keys_table_name
+        )
     except Exception as e:
         raise Exception(f"exception happened initializing Web3Signer enclave: {str(e)}")
 

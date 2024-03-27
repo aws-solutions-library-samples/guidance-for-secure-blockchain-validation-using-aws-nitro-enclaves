@@ -16,13 +16,9 @@ from aws_cdk import (
     aws_autoscaling as autoscaling,
     aws_lambda as lambda_,
     aws_lambda_python_alpha as lambda_python,
-    aws_lambda_event_sources as lambda_event_sources,
     aws_elasticloadbalancingv2 as elbv2,
     aws_route53 as route53,
     aws_route53_targets as route53_targets,
-    aws_cloudwatch as cloudwatch,
-    aws_cloudwatch_actions as cloudwatch_actions,
-    aws_sns as sns,
     aws_ssm as ssm,
 )
 
@@ -36,6 +32,7 @@ class NitroWalletStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         params = kwargs.pop("params")
         super().__init__(scope, construct_id, **kwargs)
+        self.template_options.description = "(SO9422) Guidance for Secure Blockchain Validation Using AWS Nitro Enclaves"
 
         application_type = params.get("application_type", "eth2")
         deployment_type = params.get("deployment")
@@ -284,7 +281,7 @@ class NitroWalletStack(Stack):
             ),
         )
 
-        nitro_nlb_listener = nitro_nlb.add_listener(
+        nitro_nlb.add_listener(
             "HTTPSListener",
             port=443,
             protocol=elbv2.Protocol.TCP,

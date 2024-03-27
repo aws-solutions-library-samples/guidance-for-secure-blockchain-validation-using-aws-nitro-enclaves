@@ -100,7 +100,9 @@ def generate_ec_key_from_kms(key_id: str) -> ec.EllipticCurvePrivateKey:
     # private_key_ciphertext_b64 = base64.b64encode(response["PrivateKeyCiphertextBlob"]).decode()
     # pubkey = base64.b64encode(response["PublicKey"]).decode()
 
-    loaded_private_key = serialization.load_der_private_key(private_key_der, password=None)
+    loaded_private_key = serialization.load_der_private_key(
+        private_key_der, password=None
+    )
 
     if not isinstance(loaded_private_key, ec.EllipticCurvePrivateKey):
         raise Exception("Key provided is not EllipticCurve")

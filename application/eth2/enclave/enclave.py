@@ -79,9 +79,9 @@ def main():
             _logger.debug(f"payload json: {str(payload_json)}")
 
             if not (
-                payload_json.get("credential")
-                and payload_json.get("encrypted_tls_key")
-                and payload_json.get("encrypted_validator_keys")
+                    payload_json.get("credential")
+                    and payload_json.get("encrypted_tls_key")
+                    and payload_json.get("encrypted_validator_keys")
             ):
                 msg = "init operation requires credential, encrypted_tls_key and encrypted_validator_keys parameters to be set"
                 _logger.warning(msg)
@@ -90,15 +90,21 @@ def main():
 
             credential = payload_json["credential"]
             encrypted_tls_key = payload_json["encrypted_tls_key"]
-            encrypted_validator_keys_passwords_mnemonics = payload_json["encrypted_validator_keys"]
+            encrypted_validator_keys_passwords_mnemonics = payload_json[
+                "encrypted_validator_keys"
+            ]
 
             _logger.debug("decrypting TLS key and writing into file")
             try:
                 tls_key_dict = decrypt_and_parse(credential, encrypted_tls_key)
 
-                tls_password = base64.standard_b64decode(tls_key_dict["tls_password_b64"]).decode()
+                tls_password = base64.standard_b64decode(
+                    tls_key_dict["tls_password_b64"]
+                ).decode()
                 # no decode since binary data - cat keystore.p12 | base64
-                tls_keystore = base64.standard_b64decode(tls_key_dict["tls_keystore_b64"])
+                tls_keystore = base64.standard_b64decode(
+                    tls_key_dict["tls_keystore_b64"]
+                )
             except Exception as e:
                 msg = f"exception happened handling tls key artifacts: {str(e)}"
                 _logger.error(msg)
@@ -134,7 +140,9 @@ def main():
             try:
                 web3signer_pid, web3singer_exit_code = start_web3signer()
                 if web3signer_pid == -1 or web3singer_exit_code:
-                    raise Exception(f"web3signer process was exited with code: {web3singer_exit_code}")
+                    raise Exception(
+                        f"web3signer process was exited with code: {web3singer_exit_code}"
+                    )
             except Exception as e:
                 msg = f"exception happened starting web3signer: {str(e)}"
                 _logger.error(msg)
@@ -146,7 +154,9 @@ def main():
             _logger.info("enclave has been initiated")
             handle_response(c, content, 200)
 
-            _logger.debug(f"web3signer process has been started with pid: {web3signer_pid}")
+            _logger.debug(
+                f"web3signer process has been started with pid: {web3signer_pid}"
+            )
             _logger.info("starting vsock proxy")
             try:
                 start_vsock_proxy(s)
@@ -157,7 +167,9 @@ def main():
     # run process watchdog in main thread
     while True:
         if not ensure_web3signer_healthiness(web3signer_pid):
-            _logger.fatal(f"web3signer process got interrupted - container reboot required")
+            _logger.fatal(
+                "web3signer process got interrupted - container reboot required"
+            )
 
         time.sleep(60)
 

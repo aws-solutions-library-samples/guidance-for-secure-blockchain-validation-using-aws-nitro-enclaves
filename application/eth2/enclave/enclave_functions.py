@@ -75,7 +75,9 @@ def start_web3signer() -> Tuple[Optional[int], Optional[int]]:
     _logger.debug("subprocess args: {}".format(subprocess_args))
 
     try:
-        web3signer = sp.Popen(subprocess_args, stdout=sys.stdout, stderr=sys.stderr)  # nosec B603
+        web3signer = sp.Popen(
+            subprocess_args, stdout=sys.stdout, stderr=sys.stderr
+        )  # nosec B603
     except OSError as e:
         raise e
 
@@ -103,8 +105,12 @@ def server(dock_socket: socket.socket) -> None:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client_socket.connect(("127.0.0.1", 9000))
 
-            outgoing_thread = threading.Thread(target=forward, args=(client_socket, server_socket))
-            incoming_thread = threading.Thread(target=forward, args=(server_socket, client_socket))
+            outgoing_thread = threading.Thread(
+                target=forward, args=(client_socket, server_socket)
+            )
+            incoming_thread = threading.Thread(
+                target=forward, args=(server_socket, client_socket)
+            )
 
             outgoing_thread.start()
             incoming_thread.start()
@@ -157,18 +163,26 @@ def decrypt_and_parse(credential: dict, ciphertext: str) -> dict:
         key_b64 = plaintext_b64.split(":")[1].strip()
         key_plaintext = base64.standard_b64decode(key_b64)
     except Exception as e:
-        raise Exception(f"exception happened decoding decrypted text from kms call: {str(e)}")
+        raise Exception(
+            f"exception happened decoding decrypted text from kms call: {str(e)}"
+        )
 
     try:
         parsed = json.loads(key_plaintext)
     except json.JSONDecodeError as e:
-        raise Exception("exception happened parsing plaintext key into json structure: {}".format(e))
+        raise Exception(
+            "exception happened parsing plaintext key into json structure: {}".format(e)
+        )
 
     return parsed
 
 
-def decrypt_and_parse_validator_keys(credential: dict, encrypted_validator_keys: List[str]) -> List[dict]:
-    _logger.debug(f"decrypting Validator keys and writing into file: {encrypted_validator_keys}")
+def decrypt_and_parse_validator_keys(
+    credential: dict, encrypted_validator_keys: List[str]
+) -> List[dict]:
+    _logger.debug(
+        f"decrypting Validator keys and writing into file: {encrypted_validator_keys}"
+    )
     num_of_keys = len(encrypted_validator_keys)
     parsed_validator_keys = []
     for idx, encrypted_validator_key in enumerate(encrypted_validator_keys):
@@ -180,15 +194,25 @@ def decrypt_and_parse_validator_keys(credential: dict, encrypted_validator_keys:
             raise e
 
         try:
-            validator_key_plaintext = base64.standard_b64decode(validator_key_dict["keystore_b64"]).decode()
-            validator_key_password_plaintext = base64.standard_b64decode(validator_key_dict["password_b64"]).decode()
+            validator_key_plaintext = base64.standard_b64decode(
+                validator_key_dict["keystore_b64"]
+            ).decode()
+            validator_key_password_plaintext = base64.standard_b64decode(
+                validator_key_dict["password_b64"]
+            ).decode()
         except Exception as e:
-            raise Exception(f"exception happened decoding b64 representation of key artifacts: {str(e)}")
+            raise Exception(
+                f"exception happened decoding b64 representation of key artifacts: {str(e)}"
+            )
 
         try:
             validator_key_dict = json.loads(validator_key_plaintext)
         except json.JSONDecodeError as e:
-            raise Exception("exception happened parsing validator key plaintext into json structure: {}".format(e))
+            raise Exception(
+                "exception happened parsing validator key plaintext into json structure: {}".format(
+                    e
+                )
+            )
 
         pubkey = validator_key_dict["pubkey"]
 
@@ -214,12 +238,16 @@ def persist_validator_keys(path: str, parsed_validator_keys: List[dict]) -> None
         keystore_filepath = f"{path}/{key_suffix}_keystore.json"
         key_config_filepath = f"/app/key_files/{key_suffix}_config.yaml"
 
-        _logger.debug(f"{idx + 1} / {num_of_keys} - writing key password to {password_filepath}")
+        _logger.debug(
+            f"{idx + 1} / {num_of_keys} - writing key password to {password_filepath}"
+        )
         try:
             with open(password_filepath, "w") as f:
                 f.write(parsed_validator_key["validator_key_password"])
 
-            _logger.debug(f"{idx + 1} / {num_of_keys} - writing keystore to {keystore_filepath}")
+            _logger.debug(
+                f"{idx + 1} / {num_of_keys} - writing keystore to {keystore_filepath}"
+            )
             with open(keystore_filepath, "w") as f:
                 f.write(parsed_validator_key["validator_key"])
 
@@ -230,7 +258,9 @@ def persist_validator_keys(path: str, parsed_validator_keys: List[dict]) -> None
                 "keystorePasswordFile": password_filepath,
             }
 
-            _logger.debug(f"{idx + 1} / {num_of_keys} - writing config to {key_config_filepath}")
+            _logger.debug(
+                f"{idx + 1} / {num_of_keys} - writing config to {key_config_filepath}"
+            )
             with open(key_config_filepath, "w") as f:
                 yaml.dump(key_config, f)
 
@@ -250,7 +280,9 @@ def ensure_web3signer_healthiness(pid: int) -> bool:
 
     # web3signer main thread sleeps after all java modules have been started
     if p.status() not in ["running", "sleeping"]:
-        _logger.error(f"web3signer process (pid: {pid}) not healthy with status: {p.status()}")
+        _logger.error(
+            f"web3signer process (pid: {pid}) not healthy with status: {p.status()}"
+        )
         return False
 
     return True
