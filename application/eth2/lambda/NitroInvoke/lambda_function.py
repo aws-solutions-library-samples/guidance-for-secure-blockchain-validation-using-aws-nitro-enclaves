@@ -76,9 +76,13 @@ def lambda_handler(event, context):
             )
 
         except Exception as e:
-            raise Exception("exception happened sending encryption request to KMS: {}".format(e))
+            raise Exception(
+                "exception happened sending encryption request to KMS: {}".format(e)
+            )
 
-        _logger.debug("KMS Encryption response: {}".format(response["ResponseMetadata"]))
+        _logger.debug(
+            "KMS Encryption response: {}".format(response["ResponseMetadata"])
+        )
         response_b64 = base64.standard_b64encode(response["CiphertextBlob"]).decode()
 
         _logger.info(f"Writing encrypted TLS key to Dynamodb with key_id {key_id}")
@@ -92,7 +96,9 @@ def lambda_handler(event, context):
                 }
             )
         except Exception as e:
-            raise Exception("Exception happened writing record to DynamoDB: {}".format(e))
+            raise Exception(
+                "Exception happened writing record to DynamoDB: {}".format(e)
+            )
 
         return response
 
@@ -103,7 +109,9 @@ def lambda_handler(event, context):
             record = response["Item"]
 
         except Exception as e:
-            raise Exception("exception happened reading record from DynamoDB: {}".format(e))
+            raise Exception(
+                "exception happened reading record from DynamoDB: {}".format(e)
+            )
 
         return record["encrypted_tls_key_b64"]
 
@@ -113,12 +121,16 @@ def lambda_handler(event, context):
             response = tls_keys_table.get_item(Key={"key_id": key_id})
             record = response["Item"]
         except Exception as e:
-            raise Exception("exception happened reading record from DynamoDB: {}".format(e))
+            raise Exception(
+                "exception happened reading record from DynamoDB: {}".format(e)
+            )
 
         secret_string = record["encrypted_tls_key_b64"]
 
         try:
-            response = client_kms.decrypt(KeyId=kms_key_id, CiphertextBlob=secret_string)
+            response = client_kms.decrypt(
+                KeyId=kms_key_id, CiphertextBlob=secret_string
+            )
         except Exception as e:
             raise Exception("exception happened decrypting secret: {}".format(e))
 
@@ -126,7 +138,9 @@ def lambda_handler(event, context):
 
         try:
             retrieve_and_write_tls_cert(tls_keys_table, key_id=1)
-            response = requests.get(f"https://{nitro_instance_private_dns}/upcheck", verify=TLS_CERT_PATH)
+            response = requests.get(
+                f"https://{nitro_instance_private_dns}/upcheck", verify=TLS_CERT_PATH
+            )
 
         except Exception as e:
             raise Exception("exception happened: {}".format(e))

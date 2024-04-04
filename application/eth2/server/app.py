@@ -24,15 +24,21 @@ def server(local_port, remote_cid, remote_port):
             server_socket = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
             server_socket.connect((remote_cid, remote_port))
 
-            outgoing_thread = threading.Thread(target=forward, args=(client_socket, server_socket))
-            incoming_thread = threading.Thread(target=forward, args=(server_socket, client_socket))
+            outgoing_thread = threading.Thread(
+                target=forward, args=(client_socket, server_socket)
+            )
+            incoming_thread = threading.Thread(
+                target=forward, args=(server_socket, client_socket)
+            )
 
             outgoing_thread.start()
             incoming_thread.start()
     except Exception as e:
-        _logger.debug("exception happened in proxy thread:".format(e))
+        _logger.debug(f"exception happened in proxy thread: {e}")
     finally:
-        new_thread = threading.Thread(target=server, args=(local_port, remote_cid, remote_port))
+        new_thread = threading.Thread(
+            target=server, args=(local_port, remote_cid, remote_port)
+        )
         new_thread.start()
 
 
@@ -53,7 +59,9 @@ def forward(source, destination):
 
 
 def run(local_port, enclave_cid, enclave_port):
-    thread = threading.Thread(target=server, args=(local_port, enclave_cid, enclave_port))
+    thread = threading.Thread(
+        target=server, args=(local_port, enclave_cid, enclave_port)
+    )
     thread.start()
 
     while True:

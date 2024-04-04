@@ -1,4 +1,4 @@
-# AWS Nitro Enclave Blockchain Validator (Web3Signer)
+# Guidance for Secure Blockchain Validation using AWS Nitro Enclaves
 
 This project represents an example implementation of an [AWS Nitro Enclave](https://aws.amazon.com/ec2/nitro/nitro-enclaves/)
 based [Consensys Web3Signer](https://github.com/ConsenSys/web3signer) deployment which is commonly used as a remote
@@ -9,11 +9,11 @@ A single Web3Signer deployment can be used by several Ethereum validator nodes.
 The project is implemented in [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (CDK) v2 and Python.
 
 This repository contains all code artifacts for the following two blog posts. A walkthrough, explaining how to deploy
-and configure the solution is enclosed in the `docs` folder of this repository.
+and configure the guidance is enclosed in the `docs` folder of this repository.
 
 1. [AWS Nitro Enclaves for running Ethereum validators – Part 1](https://aws.amazon.com/blogs/database/aws-nitro-enclaves-for-running-ethereum-validators-part-1/)
 2. [AWS Nitro Enclaves for running Ethereum validators – Part 2](https://aws.amazon.com/blogs/database/aws-nitro-enclaves-for-running-ethereum-validators-part-2/)
-3. [AWS Nitro Web3Signer solution walkthrough](./docs/walkthrough.md)
+3. [AWS Nitro Web3Signer guidance walkthrough](./docs/walkthrough.md)
 
 For an overview of how to design an AWS Nitro Enclave secured blockchain validation process, please have a look at [Part 1](https://aws.amazon.com/blogs/database/aws-nitro-enclaves-for-running-ethereum-validators-part-1/).
 
@@ -24,11 +24,23 @@ socket, please refer to [Part 2](https://aws.amazon.com/blogs/database/aws-nitro
 For a walkthrough on how to deploy, bootstrap, configure and start the AWS Nitro Enclave secured Web3Signer process, please
 refer to the [walkthrough](./docs/walkthrough.md).
 
-## Solution overview
+## Guidance overview
 
 ### Deployment overview
 
-![Architecture](./assets/nitro_enclaves.drawio.png)
+![Architecture](./assets/secure-blockchain-validation-using-aws-nitro-enclaves.png)
+
+
+1. The solution will be deployed in your configured AWS account.
+2. All required artifacts are being uploaded to Amazon Elastic Container Registry (ECR).
+3. Config artifacts are being secured by leveraging AWS Key Management Service (KMS) symmetric encryption.
+4. Amazon DynamoDB is used as the storage service for the encrypted config artifacts.
+5. AWS Systems Manager is being used for secure access to the Amazon Elastic Compute Cloud (EC2) instances and also for secure initialization of the Web3Signer enclave.
+6. Cryptographic attestation is being used to securely decrypt the config artifacts from within the AWS Nitro Enclave via AWS KMS.
+7. Incoming `https` requests to Web3Signer API are being proxied over the `vsock` tunnel.
+8. The provided AWS Lambda function can be used to control the status of the Web3Signer.
+9. All incoming Web3Signer API requests are being routed via a Network Load Balancer and forwarded to the EC2 instances running isolated in private subnets.
+10. Validator clients or consensus clients can directly interact with the Web3Signer API exposed via the Network Load Balancer.
 
 ### Application overview and high-level bootstrapping flow
 
@@ -46,9 +58,9 @@ refer to the [walkthrough](./docs/walkthrough.md).
 For a more detailed explanation of the bootstrapping process please refer to the bootstrapping section of
 the [walkthrough](./docs/walkthrough.md#bootstrapping-flow).
 
-## Solution Walkthrough
+## Guidance Walkthrough
 
-* [AWS Nitro Web3Signer Solution Walkthrough](./docs/walkthrough.md)
+* [AWS Nitro Web3Signer Guidance Walkthrough](./docs/walkthrough.md)
 
 ## Development
 
@@ -59,9 +71,9 @@ the [walkthrough](./docs/walkthrough.md#bootstrapping-flow).
 * [Configured AWS credentials](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_prerequisites)
 * [Docker](https://docs.docker.com/get-docker/), [Node.js](https://nodejs.org/en/download/)
   , [Python 3.9](https://www.python.org/downloads/release/python-3916), [pip](https://pip.pypa.io/en/stable/installing/),
-  and [jq](https://stedolan.github.io/jq/) installed on the workstation that you plan to deploy the solution from.
+  and [jq](https://stedolan.github.io/jq/) installed on the workstation that you plan to deploy the guidance from.
 
-Note that the solution is **only** compatible with Python 3.9.
+Note that the guidance is **only** compatible with Python 3.9.
 
 ### Deploy with AWS CDK
 

@@ -1,5 +1,7 @@
 {
   "app": "python3 app.py",
   "context": {
+    "solution_id": "SO9422",
+    "solution_name": "Guidance for Secure Blockchain Validation Using AWS Nitro Enclaves"
   }
 }
