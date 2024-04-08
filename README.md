@@ -58,6 +58,21 @@ refer to the [walkthrough](./docs/walkthrough.md).
 For a more detailed explanation of the bootstrapping process please refer to the bootstrapping section of
 the [walkthrough](./docs/walkthrough.md#bootstrapping-flow).
 
+### Cost
+
+You are responsible for the cost of the AWS services used while running this Guidance.
+As of April 2024, the cost for running this Guidance with the default settings in `us-east-1` is approximately $200 per month for processing ( 20000 requests ).
+
+### Sample Cost Table
+The following table provides a sample cost breakdown for deploying this Guidance with the default parameters in the US East (N. Virginia) Region for one month.
+
+| AWS service                        | Dimensions                                               | Cost [USD]     |
+|------------------------------------|----------------------------------------------------------|----------------|
+| Amazon Elastic Compute Cloud (EC2) | 2 c6a.xlarge instances                                   | $ 107.85 month |
+| AWS Key Management Service (KMS)   | 1 Customer Managed Master Key / 20000 symmetric requests | $ 1.06 month   |
+| Network Load Balancer              | 1                                                        | $ 16.43 month  |
+| Network Address Translation (NAT) Gateway | 2                                                 | $ 65.78 month  |
+
 ## Guidance Walkthrough
 
 * [AWS Nitro Web3Signer Guidance Walkthrough](./docs/walkthrough.md)
