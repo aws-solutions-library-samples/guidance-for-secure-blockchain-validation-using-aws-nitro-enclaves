@@ -78,12 +78,11 @@ def verify_keystore(credential: Credential, keystore: Keystore, password: str) -
 
 
 def main(
-    num_validators=5,
-    mnemonic_language="english",
-    chain="goerli",
-    eth1_withdrawal_address="0x6F4b46423fc6181a0cF34e6716c220BD4d6C2471",
+        num_validators=5,
+        mnemonic_language="english",
+        chain="sepolia",
+        eth1_withdrawal_address="0x6F4b46423fc6181a0cF34e6716c220BD4d6C2471",
 ) -> list:
-
     if kms_key_arn is None:
         raise ValueError("Specify KMS_KEY_ARN environment variable")
 

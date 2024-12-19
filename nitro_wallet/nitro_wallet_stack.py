@@ -94,6 +94,9 @@ class NitroWalletStack(Stack):
             "EthereumSigningServerImage",
             directory="./application/{}/server".format(application_type),
             build_args={"REGION_ARG": self.region, "LOG_LEVEL_ARG": log_level},
+            platform=ecr_assets.Platform.LINUX_AMD64,
+            asset_name="EthereumSigningServerImage"
+
         )
 
         signing_enclave_image = ecr_assets.DockerImageAsset(
@@ -101,6 +104,8 @@ class NitroWalletStack(Stack):
             "EthereumSigningEnclaveImage",
             directory="./application/{}/enclave".format(application_type),
             build_args={"REGION_ARG": self.region, "LOG_LEVEL_ARG": log_level},
+            platform=ecr_assets.Platform.LINUX_AMD64,
+            asset_name="EthereumSigningEnclaveImage"
         )
 
         watchdog = s3_assets.Asset(
@@ -227,6 +232,7 @@ class NitroWalletStack(Stack):
             block_devices=[block_device],
             role=role,
             security_group=nitro_instance_sg,
+            http_put_response_hop_limit=3
         )
 
         nitro_nlb = elbv2.NetworkLoadBalancer(
@@ -292,7 +298,7 @@ class NitroWalletStack(Stack):
             self,
             "NitroInvokeLambdaLayer",
             entry="application/{}/lambda/layer".format(params["application_type"]),
-            compatible_runtimes=[lambda_.Runtime.PYTHON_3_9],
+            compatible_runtimes=[lambda_.Runtime.PYTHON_3_11],
         )
 
         invoke_lambda = lambda_python.PythonFunction(
@@ -301,7 +307,7 @@ class NitroWalletStack(Stack):
             entry="application/{}/lambda/NitroInvoke".format(params["application_type"]),
             handler="lambda_handler",
             index="lambda_function.py",
-            runtime=lambda_.Runtime.PYTHON_3_9,
+            runtime=lambda_.Runtime.PYTHON_3_11,
             timeout=Duration.minutes(2),
             memory_size=256,
             environment={
@@ -314,6 +320,7 @@ class NitroWalletStack(Stack):
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
             security_groups=[signer_client_sg],
+            architecture=lambda_.Architecture.X86_64
         )
 
         encryption_key.grant_encrypt(invoke_lambda)

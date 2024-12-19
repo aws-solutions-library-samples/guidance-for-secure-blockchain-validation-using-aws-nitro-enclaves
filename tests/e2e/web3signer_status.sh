@@ -19,7 +19,13 @@ function send_request() {
   printf "\n%s\n" "$(date '+%d/%m/%Y %H:%M:%S'): sending request"
   echo "${GENERIC_REQUEST}" | jq '.operation="'${1}'"' >.tmp.payload
   # $( echo ${payload} | jq -R -s '.')
-  aws lambda invoke --cli-binary-format raw-in-base64-out --function-name "${lambda_function_name}" --payload file://.tmp.payload .tmp.out
+  # --no-cli-pager requires aws cliv2
+  aws lambda invoke \
+   --no-cli-pager \
+   --cli-binary-format raw-in-base64-out \
+   --region "${CDK_DEPLOY_REGION}" \
+   --function-name "${lambda_function_name}" \
+   --payload file://.tmp.payload .tmp.out
   echo "result: $(<.tmp.out)"
   rm -rf .tmp.out .tmp.payload
 }
