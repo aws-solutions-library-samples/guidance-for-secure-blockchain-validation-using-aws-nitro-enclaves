@@ -29,6 +29,7 @@ status_command_id_hot=$(aws ssm send-command \
 instance_ids_nl=$(echo ${instance_ids} | tr "\n " " ")
 for instance_id in ${instance_ids_nl}; do
   status=$(aws ssm list-command-invocations \
+  --region ${CDK_DEPLOY_REGION} \
   --instance-id ${instance_id} \
   --command-id ${status_command_id_hot} \
   --details | jq -r '.CommandInvocations[0].CommandPlugins[0].Output')

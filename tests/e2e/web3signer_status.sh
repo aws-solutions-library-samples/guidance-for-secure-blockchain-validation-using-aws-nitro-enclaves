@@ -19,7 +19,6 @@ function send_request() {
   printf "\n%s\n" "$(date '+%d/%m/%Y %H:%M:%S'): sending request"
   echo "${GENERIC_REQUEST}" | jq '.operation="'${1}'"' >.tmp.payload
   # $( echo ${payload} | jq -R -s '.')
-  # --no-cli-pager requires aws cliv2
   aws lambda invoke \
    --no-cli-pager \
    --cli-binary-format raw-in-base64-out \
@@ -30,8 +29,8 @@ function send_request() {
   rm -rf .tmp.out .tmp.payload
 }
 
-while True; do
+while true; do
   send_request "${STATUS_OPERATION}"
   send_request "${PUBLIC_KEYS_OPERATION}"
-  sleep 1
+  sleep 5
 done

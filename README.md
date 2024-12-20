@@ -85,10 +85,9 @@ The following table provides a sample cost breakdown for deploying this Guidance
 * An [AWS Identity and Access Management](http://aws.amazon.com/iam) (IAM) user with administrator access
 * [Configured AWS credentials](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_prerequisites)
 * [Docker](https://docs.docker.com/get-docker/), [Node.js](https://nodejs.org/en/download/)
-  , [Python 3.9](https://www.python.org/downloads/release/python-3916), [pip](https://pip.pypa.io/en/stable/installing/),
+  , [>=Python 3.11](https://www.python.org/downloads/release/python-3110/), [pip](https://pip.pypa.io/en/stable/installing/),
   and [jq](https://stedolan.github.io/jq/) installed on the workstation that you plan to deploy the guidance from.
 
-Note that the guidance is **only** compatible with Python 3.9.
 
 ### Deploy with AWS CDK
 

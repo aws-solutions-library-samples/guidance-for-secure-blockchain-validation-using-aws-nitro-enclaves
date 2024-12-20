@@ -95,8 +95,8 @@ fi
 
 if [[ ! -f /etc/systemd/system/nitro-signing-server.service ]]; then
 
-  aws s3 cp ${__WATCHDOG_SYSTEMD_S3_URL__} /etc/systemd/system/nitro-signing-server.service
-  aws s3 cp ${__WATCHDOG_S3_URL__} /home/ec2-user/app/watchdog.py
+  aws --region ${__REGION__} s3 cp ${__WATCHDOG_SYSTEMD_S3_URL__} /etc/systemd/system/nitro-signing-server.service
+  aws --region ${__REGION__} s3 cp ${__WATCHDOG_S3_URL__} /home/ec2-user/app/watchdog.py
 
   chmod +x /home/ec2-user/app/watchdog.py
 
