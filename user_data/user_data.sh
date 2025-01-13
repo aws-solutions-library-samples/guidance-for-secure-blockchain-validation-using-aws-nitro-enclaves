@@ -74,8 +74,10 @@ if [[ ! -d ./app/server ]]; then
 set -x
 set -e
 
-account_id=$( aws sts get-caller-identity | jq -r '.Account' )
-region=$( curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region' )
+token=$( curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" )
+account_id=$( curl -H "X-aws-ec2-metadata-token: $token" http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.accountId' )
+region=$( curl -H "X-aws-ec2-metadata-token: $token" http://169.254.169.254/latest/meta-data/placement/region )
+
 aws ecr get-login-password --region $region | docker login --username AWS --password-stdin $account_id.dkr.ecr.$region.amazonaws.com
 docker pull ${__SIGNING_SERVER_IMAGE_URI__}
 docker pull ${__SIGNING_ENCLAVE_IMAGE_URI__}
@@ -93,8 +95,8 @@ fi
 
 if [[ ! -f /etc/systemd/system/nitro-signing-server.service ]]; then
 
-  aws s3 cp ${__WATCHDOG_SYSTEMD_S3_URL__} /etc/systemd/system/nitro-signing-server.service
-  aws s3 cp ${__WATCHDOG_S3_URL__} /home/ec2-user/app/watchdog.py
+  aws --region ${__REGION__} s3 cp ${__WATCHDOG_SYSTEMD_S3_URL__} /etc/systemd/system/nitro-signing-server.service
+  aws --region ${__REGION__} s3 cp ${__WATCHDOG_S3_URL__} /home/ec2-user/app/watchdog.py
 
   chmod +x /home/ec2-user/app/watchdog.py
 
@@ -111,5 +113,5 @@ if [[ $init_flag == "true" ]]; then
 fi
 
 # docker over system process manager
-sudo docker run -d --restart unless-stopped --name http_server -p 8443:443 ${__SIGNING_SERVER_IMAGE_URI__}
+docker run -d --restart unless-stopped --security-opt seccomp=unconfined --name http_server -p 8443:443 ${__SIGNING_SERVER_IMAGE_URI__}
 --//--

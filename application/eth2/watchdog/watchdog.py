@@ -28,29 +28,51 @@ _logger.setLevel(LOG_LEVEL)
 _logger.addHandler(handler)
 
 
-def get_aws_session_token() -> dict:
+def get_imds_token():
     http_ec2_client = client.HTTPConnection("169.254.169.254")
-    http_ec2_client.request("GET", "/latest/meta-data/iam/security-credentials/")
-    r = http_ec2_client.getresponse()
-
-    instance_profile_name = r.read().decode()
-
-    http_ec2_client = client.HTTPConnection("169.254.169.254")
-    http_ec2_client.request(
-        "GET",
-        f"/latest/meta-data/iam/security-credentials/{instance_profile_name}",
-    )
-    r = http_ec2_client.getresponse()
-
-    response = json.loads(r.read())
-
-    credential = {
-        "access_key_id": response["AccessKeyId"],
-        "secret_access_key": response["SecretAccessKey"],
-        "token": response["Token"],
+    headers = {
+        "X-aws-ec2-metadata-token-ttl-seconds": "21600"  # Token valid for 6 hours
     }
+    http_ec2_client.request("PUT", "/latest/api/token", headers=headers)
+    token_response = http_ec2_client.getresponse()
+    return token_response.read().decode()
 
-    return credential
+
+def get_aws_session_token():
+    try:
+        token = get_imds_token()
+
+        http_ec2_client = client.HTTPConnection("169.254.169.254")
+        headers = {"X-aws-ec2-metadata-token": token}
+
+        # Get instance profile name
+        http_ec2_client.request(
+            "GET",
+            "/latest/meta-data/iam/security-credentials/",
+            headers=headers
+        )
+        r = http_ec2_client.getresponse()
+        instance_profile_name = r.read().decode()
+
+        # Get credentials
+        http_ec2_client.request(
+            "GET",
+            f"/latest/meta-data/iam/security-credentials/{instance_profile_name}",
+            headers=headers
+        )
+        r = http_ec2_client.getresponse()
+        response = json.loads(r.read())
+        return {
+            "access_key_id": response["AccessKeyId"],
+            "secret_access_key": response["SecretAccessKey"],
+            "token": response["Token"],
+        }
+
+    except Exception as e:
+        raise Exception(f"Failed to retrieve instance credentials: {str(e)}")
+    finally:
+        if 'http_ec2_client' in locals():
+            http_ec2_client.close()
 
 
 def get_cloudformation_stack_id(cf_stack_name: str) -> str:
@@ -92,8 +114,8 @@ def nitro_cli_describe_call(name: str = None) -> bool:
             return False
 
         if (
-            response[0].get("EnclaveName") != name
-            and response[0].get("State") != "Running"
+                response[0].get("EnclaveName") != name
+                and response[0].get("State") != "Running"
         ):
             return False
 
@@ -230,7 +252,7 @@ def get_encrypted_tls_key(tls_keys_table_name: str, key_id=1) -> str:
 
 
 def init_web3signer_call(
-    tls_keys_table_name: str, cf_stack_name: str, validator_keys_table_name: str
+        tls_keys_table_name: str, cf_stack_name: str, validator_keys_table_name: str
 ) -> None:
     uuid = get_cloudformation_stack_id(cf_stack_name)
     encrypted_validator_keys = get_encrypted_validator_keys(
@@ -238,11 +260,11 @@ def init_web3signer_call(
     )
     encrypted_tls_key = get_encrypted_tls_key(tls_keys_table_name=tls_keys_table_name)
 
-    credential = get_aws_session_token()
+    credentials = get_aws_session_token()
 
     payload = {
         "operation": "init",
-        "credential": credential,
+        "credential": credentials,
         "encrypted_tls_key": encrypted_tls_key,
         "encrypted_validator_keys": encrypted_validator_keys,
     }

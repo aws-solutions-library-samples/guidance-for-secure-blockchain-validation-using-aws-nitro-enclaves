@@ -37,12 +37,16 @@ logger.setLevel(LOG_LEVEL)
 logger.addHandler(handler)
 logger.propagate = False
 
+region = os.getenv("CDK_DEPLOY_REGION", "us-east-1")
+
 kms_key_arn = os.getenv("KMS_KEY_ARN")
 table_name = os.getenv("DDB_TABLE_NAME")
 cf_stack_name = os.getenv("CF_STACK_NAME")
 
-client_kms = boto3.client("kms")
-dynamodb = boto3.resource("dynamodb")
+client_kms = boto3.client(service_name="kms",
+                          region_name=region)
+dynamodb = boto3.resource(service_name="dynamodb",
+                          region_name=region)
 
 words_list_path = "word_lists"
 
@@ -50,7 +54,8 @@ words_list_path = "word_lists"
 def get_cloudformation_stack_id(cf_stack_name):
     """Get CF Stack ID"""
 
-    client = boto3.client(service_name="cloudformation")
+    client = boto3.client(service_name="cloudformation",
+                          region_name=region)
 
     try:
         response = client.describe_stacks(
@@ -78,12 +83,11 @@ def verify_keystore(credential: Credential, keystore: Keystore, password: str) -
 
 
 def main(
-    num_validators=5,
-    mnemonic_language="english",
-    chain="goerli",
-    eth1_withdrawal_address="0x6F4b46423fc6181a0cF34e6716c220BD4d6C2471",
+        num_validators=5,
+        mnemonic_language="english",
+        chain="sepolia",
+        eth1_withdrawal_address="0x6F4b46423fc6181a0cF34e6716c220BD4d6C2471",
 ) -> list:
-
     if kms_key_arn is None:
         raise ValueError("Specify KMS_KEY_ARN environment variable")
 

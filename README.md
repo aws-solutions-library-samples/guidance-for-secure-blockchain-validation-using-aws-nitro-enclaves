@@ -85,10 +85,9 @@ The following table provides a sample cost breakdown for deploying this Guidance
 * An [AWS Identity and Access Management](http://aws.amazon.com/iam) (IAM) user with administrator access
 * [Configured AWS credentials](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_prerequisites)
 * [Docker](https://docs.docker.com/get-docker/), [Node.js](https://nodejs.org/en/download/)
-  , [Python 3.9](https://www.python.org/downloads/release/python-3916), [pip](https://pip.pypa.io/en/stable/installing/),
+  , [>=Python 3.11](https://www.python.org/downloads/release/python-3110/), [pip](https://pip.pypa.io/en/stable/installing/),
   and [jq](https://stedolan.github.io/jq/) installed on the workstation that you plan to deploy the guidance from.
 
-Note that the guidance is **only** compatible with Python 3.9.
 
 ### Deploy with AWS CDK
 
@@ -176,6 +175,27 @@ cdk deploy prodNitroSigner -O output.json
 ```
 
 Follow all subsequent steps from the dev deployment pointed out above.
+
+## Troubleshooting
+
+**Docker Image Push/Pull Error**
+* On `building` instance during `cdk deploy` step:
+```shell
+devNitroWalletEth: fail: docker push 012345678910.dkr.ecr.us-east-1.amazonaws.com/cdk-hnb659fds-container-assets-012345678910-us-east-1:ab3fe... exited with error code 1: failed commit on ref "manifest-sha256:7141...": unexpected status from PUT request to https://012345678910.dkr.ecr.us-east-1.amazonaws.com/v2/cdk-hnb659fds-container-assets-012345678910-us-east-1/manifests/ab3fe...: 400 Bad Request
+Failed to publish asset ab3fe...:012345678910-us-east-1
+```
+
+* On EC2 instance pulling docker container
+```shell
+ab3fe...: Pulling from cdk-hnb659fds-container-assets-012345678910-us-east-1
+unsupported media type application/vnd.in-toto+json
+```
+
+**Solution**
+* Issue might be related building and publishing docker containers from an `arm` based instances such as Apple Silicon, requiring docker `buildx` [issue](https://github.com/aws/aws-cdk/issues/30258)
+* Cleanup images from local docker repository (`docker rmi ...`) and from Amazon Elastic Container Registry (ECR) e.g. via AWS console
+* Set environment variable in terminal session (`export BUILDX_NO_DEFAULT_ATTESTATIONS=1`) or specify it during cdk deployment  (`BUILDX_NO_DEFAULT_ATTESTATIONS=1 cdk deploy`)
+
 
 ## Security
 
