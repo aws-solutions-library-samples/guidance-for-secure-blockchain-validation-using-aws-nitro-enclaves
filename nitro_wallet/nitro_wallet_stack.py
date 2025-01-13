@@ -157,7 +157,7 @@ class NitroWalletStack(Stack):
         nitro_instance_sg.add_ingress_rule(signer_client_sg, ec2.Port.tcp(8443))
 
         # AMI
-        amzn_linux = ec2.MachineImage.latest_amazon_linux(generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2)
+        amzn_linux = ec2.MachineImage.latest_amazon_linux2()
 
         # Instance Role and SSM Managed Policy
         role = iam.Role(

@@ -113,5 +113,5 @@ if [[ $init_flag == "true" ]]; then
 fi
 
 # docker over system process manager
-sudo docker run -d --restart unless-stopped --security-opt seccomp=unconfined --name http_server -p 8443:443 ${__SIGNING_SERVER_IMAGE_URI__}
+docker run -d --restart unless-stopped --security-opt seccomp=unconfined --name http_server -p 8443:443 ${__SIGNING_SERVER_IMAGE_URI__}
 --//--
