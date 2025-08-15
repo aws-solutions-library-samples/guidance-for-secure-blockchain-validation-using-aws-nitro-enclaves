@@ -19,4 +19,4 @@ ssz==0.3.1
 staking-deposit @ git+https://github.com/ethereum/staking-deposit-cli.git@v2.8.0
 toolz==0.12.0
 urllib3<2.1.0
-cryptography==41.0.7
+cryptography==44.0.1
