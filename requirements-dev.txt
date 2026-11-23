@@ -1,4 +1,4 @@
-pytest==7.4.4
+pytest==9.0.3
 black>=23.12.1
 pre-commit>=3.6.0
 bandit>=1.7.6
